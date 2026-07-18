@@ -24,6 +24,7 @@ export class LaudusClientService {
     const url = `${this.config.getOrThrow<string>('laudus.baseUrl')}${endpoint}`;
 
     const headers = {
+      Accept: 'application/json',
       Authorization: `Bearer ${token}`,
       ...config?.headers,
     };
