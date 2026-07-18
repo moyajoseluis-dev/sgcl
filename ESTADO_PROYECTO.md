@@ -11,7 +11,7 @@ Uso de patrones (Repository, DTOs, Builders).
 SDK de Laudus aislado en backend/src/laudus-sdk/.
 Seguridad: JWT, Validación estricta, Swagger.
 Imports limpios usando alias @/ (configurado en tsconfig.json y vite.config.ts).
-Estado Actual del Proyecto
+Estado Actual del Proyecto (Fase MVP Completada)
  Infraestructura base (Git, Docker Compose para Postgres/Redis).
  Configuración base de Backend (NestJS, TS estricto, ESLint, Prettier).
  Módulo de Autenticación propio (JWT, Passport, AuthService). Usuario en memoria: admin/admin.
@@ -19,14 +19,11 @@ Estado Actual del Proyecto
  Módulo de Ventas (SalesModule) integrado y probado exitosamente contra Laudus.
  Inicialización Frontend (Vue 3, Tailwind 4, Layout profesional).
  Conexión Frontend-Backend (Login automático y fetch de facturas reales en Vue).
- Refactor SDK Laudus: Forzar cabeceras Accept: application/json para evitar respuestas CSV.
- Base de datos PostgreSQL con Prisma ORM (Usuarios propios, configuraciones).
- Nuevos módulos (Compras, Clientes, Proveedores).
-Configuración de Entorno
-Backend (backend/.env): Requiere PORT, JWT_SECRET, credenciales LAUDUS_*.
-Frontend: Apunta a http://localhost:3001/api/v1 por defecto.
-Estructura de Carpetas Actual
-sgcl/├── docker-compose.yml├── ESTADO_PROYECTO.md├── .gitignore├── backend/│ └── src/│ ├── app.module.ts│ ├── main.ts│ ├── config/│ ├── common/│ ├── laudus-sdk/│ │ ├── laudus-sdk.module.ts│ │ ├── dto/ (PagedRequest, FilterBy, OrderBy, etc)│ │ ├── models/ (SalesInvoice, etc)│ │ ├── repositories/ (BaseRepository, SalesInvoicesRepository)│ │ └── services/ (LaudusAuthService, LaudusClientService)│ └── modules/│ ├── auth/ (JWT strategy, login)│ └── sales/ (SalesController, SalesService)└── frontend/ └── src/ ├── App.vue ├── main.ts ├── style.css ├── router/index.ts ├── services/api.ts (Instancia Axios) ├── stores/auth.ts (Pinia) ├── layouts/MainLayout.vue └── views/ (DashboardView.vue, SalesView.vue)
-
-
-
+ Forzar cabeceras Accept: application/json en SDK para evitar respuestas CSV de Laudus.
+ Renderizado exitoso de facturas en tabla de Vue.
+Próximos Pasos (Por decidir)
+ Crear pantalla de Login real en Vue (en vez de auto-login oculto).
+ Implementar PostgreSQL con Prisma ORM para guardar usuarios propios y configuraciones.
+ Ampliar Tabla de Facturas (Agregar paginación, botón ver detalle, más columnas).
+ Crear módulo de Compras (/purchases).
+ Generar PDF de facturas desde la interfaz.
