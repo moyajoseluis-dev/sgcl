@@ -6,18 +6,19 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { UsersModule } from '@/modules/users/users.module'; // <--- Importado
 
 @Module({
   imports: [
     ConfigModule,
     PassportModule,
+    UsersModule, // <--- Añadido
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.getOrThrow<string>('jwt.secret'),
         signOptions: {
-          // Al omitir <string>, ConfigService retorna el tipo esperado por JwtModule
           expiresIn: config.getOrThrow('jwt.expiresIn'),
         },
       }),

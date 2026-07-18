@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-
+import * as bcrypt from 'bcrypt';
+import { UsersService } from '@/modules/users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
@@ -9,33 +9,37 @@ import { JwtPayload } from './interfaces/jwt-payload.interface';
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
   ) {}
 
   async login(dto: LoginDto): Promise<LoginResponseDto> {
-    // Validación temporal en memoria (luego será contra Base de Datos)
-    if (dto.username !== 'admin' || dto.password !== 'admin') {
-      throw new UnauthorizedException('Usuario o contraseña incorrectos');
+    // 1. Buscar usuario real en base de datos
+    const user = await this.usersService.findByEmail(dto.username);
+    if (!user) {
+      throw new UnauthorizedException('Credenciales incorrectas');
     }
 
+    // 2. Comparar contraseñas encriptadas
+    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Credenciales incorrectas');
+    }
+
+    // 3. Generar JWT
     const payload: JwtPayload = {
-      sub: '1',
-      username: dto.username,
-      role: 'ADMIN',
+      sub: user.id.toString(),
+      username: user.email,
+      role: user.role,
     };
 
     const accessToken = await this.jwtService.signAsync(payload);
-    const expiresIn = this.configService.get<string>('jwt.expiresIn') ?? '8h';
-
-    // Convertir "8h" a segundos para la respuesta (opcional pero profesional)
-    const seconds = parseInt(expiresIn.replace(/\D/g, '')) * 3600;
 
     return {
       accessToken,
       tokenType: 'Bearer',
-      expiresIn: seconds,
-      username: dto.username,
+      expiresIn: 28800,
+      username: user.email,
     };
   }
 }
