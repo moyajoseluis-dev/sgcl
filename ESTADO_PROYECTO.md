@@ -1,7 +1,7 @@
 🚀 SGCL - Sistema de Gestión y Control Laudus
 Arquitectura General
-Frontend: Vue 3 + Vite + TailwindCSS + Pinia (Próximamente)
-Backend: NestJS 11 + TypeScript Estricto (Sin any)
+Frontend: Vue 3 + Vite + TailwindCSS 4 + Pinia + Axios (Puerto 5173)
+Backend: NestJS 11 + TypeScript Estricto (Sin any) (Puerto 3001)
 Base de Datos: PostgreSQL 16 (Gestionado con Prisma ORM próximamente)
 Infraestructura: Docker, Docker Compose
 Integración: Laudus API (Vía SDK interno desacoplado)
@@ -10,21 +10,23 @@ Arquitectura modular en Backend.
 Uso de patrones (Repository, DTOs, Builders).
 SDK de Laudus aislado en backend/src/laudus-sdk/.
 Seguridad: JWT, Validación estricta, Swagger.
-Imports limpios usando alias @/ (configurado en tsconfig.json).
-Estado Actual del Proyecto (Fase Backend)
+Imports limpios usando alias @/ (configurado en tsconfig.json y vite.config.ts).
+Estado Actual del Proyecto
  Infraestructura base (Git, Docker Compose para Postgres/Redis).
  Configuración base de Backend (NestJS, TS estricto, ESLint, Prettier).
  Módulo de Autenticación propio (JWT, Passport, AuthService). Usuario en memoria: admin/admin.
- Base del SDK de Laudus (LaudusAuthService para login automático y LaudusClientService para peticiones HTTP).
- Patrón BaseRepository y DTOs de Laudus (Filtros, Paginación).
- Módulo de Ventas (Sales Invoices) integrado con Laudus.
- Inicialización Frontend (Vue 3).
-Configuración de Entorno (.env)
-El backend requiere un archivo .env en backend/ con las siguientes variables:
+ Base del SDK de Laudus (LaudusAuthService, LaudusClientService, BaseRepository).
+ Módulo de Ventas (SalesModule) integrado y probado exitosamente contra Laudus.
+ Inicialización Frontend (Vue 3, Tailwind 4, Layout profesional).
+ Conexión Frontend-Backend (Login automático y fetch de facturas reales en Vue).
+ Refactor SDK Laudus: Forzar cabeceras Accept: application/json para evitar respuestas CSV.
+ Base de datos PostgreSQL con Prisma ORM (Usuarios propios, configuraciones).
+ Nuevos módulos (Compras, Clientes, Proveedores).
+Configuración de Entorno
+Backend (backend/.env): Requiere PORT, JWT_SECRET, credenciales LAUDUS_*.
+Frontend: Apunta a http://localhost:3001/api/v1 por defecto.
+Estructura de Carpetas Actual
+sgcl/├── docker-compose.yml├── ESTADO_PROYECTO.md├── .gitignore├── backend/│ └── src/│ ├── app.module.ts│ ├── main.ts│ ├── config/│ ├── common/│ ├── laudus-sdk/│ │ ├── laudus-sdk.module.ts│ │ ├── dto/ (PagedRequest, FilterBy, OrderBy, etc)│ │ ├── models/ (SalesInvoice, etc)│ │ ├── repositories/ (BaseRepository, SalesInvoicesRepository)│ │ └── services/ (LaudusAuthService, LaudusClientService)│ └── modules/│ ├── auth/ (JWT strategy, login)│ └── sales/ (SalesController, SalesService)└── frontend/ └── src/ ├── App.vue ├── main.ts ├── style.css ├── router/index.ts ├── services/api.ts (Instancia Axios) ├── stores/auth.ts (Pinia) ├── layouts/MainLayout.vue └── views/ (DashboardView.vue, SalesView.vue)
 
-PORT, NODE_ENV, JWT_SECRET, JWT_EXPIRES_IN
-DATABASE_URL (PostgreSQL de Docker)
-LAUDUS_BASE_URL, LAUDUS_USERNAME, LAUDUS_PASSWORD, LAUDUS_COMPANY_VAT_ID
-Estructura de Carpetas Actual (Backend)
-sgcl/├── docker-compose.yml├── ESTADO_PROYECTO.md├── .gitignore└── backend/ ├── .env ├── .env.example ├── .prettierrc ├── eslint.config.mjs ├── nest-cli.json ├── package.json ├── tsconfig.json ├── tsconfig.build.json └── src/ ├── app.module.ts ├── main.ts ├── config/ │ ├── configuration.ts │ └── validation.ts ├── common/ │ └── decorators/ │ └── public.decorator.ts ├── laudus-sdk/ │ ├── laudus-sdk.module.ts │ ├── models/ │ │ ├── login-request.model.ts │ │ ├── login-response.model.ts │ │ └── token.model.ts │ └── services/ │ ├── laudus-auth.service.ts │ └── laudus-client.service.ts └── modules/ └── auth/ ├── auth.module.ts ├── auth.controller.ts ├── auth.service.ts ├── dto/ │ ├── login.dto.ts │ └── login-response.dto.ts ├── interfaces/ │ └── jwt-payload.interface.ts └── strategies/ └── jwt.strategy.ts
+
 
