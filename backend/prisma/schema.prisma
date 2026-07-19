@@ -25,3 +25,25 @@ enum Role {
   MANAGER
   USER
 }
+
+// ... (tu código existente de User y Role)
+
+model Contract {
+  id          Int            @id @default(autoincrement())
+  title       String
+  description String?
+  status      ContractStatus @default(ACTIVE)
+  startDate   DateTime
+  endDate     DateTime
+  amount      Float
+  entityName  String         // Nombre del cliente o proveedor
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+enum ContractStatus {
+  ACTIVE
+  PENDING
+  EXPIRED
+  CANCELLED
+}

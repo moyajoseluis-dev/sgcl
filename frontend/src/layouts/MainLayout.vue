@@ -12,6 +12,9 @@
         <router-link to="/sales" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-800 hover:text-blue-400">
           🧾 Facturas de Venta
         </router-link>
+        <router-link to="/contracts" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-800 hover:text-blue-400">
+          📄 Contratos
+        </router-link>
         <router-link to="/users" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-800 hover:text-blue-400">
           👤 Usuarios
         </router-link>

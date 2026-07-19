@@ -8,6 +8,7 @@ import { SalesModule } from './modules/sales/sales.module';
 import { UsersModule } from './modules/users/users.module'; // <--- Añadido
 import { LaudusSdkModule } from './laudus-sdk/laudus-sdk.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { ContractsModule } from './modules/contracts/contracts.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { PrismaModule } from './prisma/prisma.module';
     LaudusSdkModule,
     SalesModule,
     UsersModule, // <--- Añadido
+    ContractsModule,
   ],
 })
 export class AppModule {}
