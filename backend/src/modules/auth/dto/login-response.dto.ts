@@ -3,4 +3,5 @@ export class LoginResponseDto {
   tokenType!: string;
   expiresIn!: number;
   username!: string;
+  role!: string; // <--- AGREGA ESTA LÍNEA
 }

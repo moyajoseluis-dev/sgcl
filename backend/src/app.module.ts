@@ -11,6 +11,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ContractsModule } from './modules/contracts/contracts.module';
 import { PurchasesModule } from './modules/purchases/purchases.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ScheduleModule } from '@nestjs/schedule'; // <--- Importar
+import { SyncModule } from './modules/sync/sync.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     ContractsModule,
     PurchasesModule,
     DashboardModule, 
+    SyncModule,
+    ScheduleModule.forRoot(), // <--- Añadir esto
   ],
 })
 export class AppModule {}

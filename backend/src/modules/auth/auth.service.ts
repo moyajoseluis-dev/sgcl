@@ -40,6 +40,7 @@ export class AuthService {
       tokenType: 'Bearer',
       expiresIn: 28800,
       username: user.email,
+      role: user.role, // <--- AGREGA ESTA LÍNEA
     };
   }
 }

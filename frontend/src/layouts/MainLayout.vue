@@ -18,8 +18,10 @@
         <router-link to="/contracts" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-800 hover:text-blue-400">
           📄 Contratos
         </router-link>
-        <router-link to="/users" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-800 hover:text-blue-400">
-          👤 Usuarios
+        
+        <!-- v-if: Solo visible para administradores -->
+        <router-link v-if="authStore.isAdmin" to="/users" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-800 hover:text-blue-400">
+          👤 Administración
         </router-link>
       </nav>
     </aside>

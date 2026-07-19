@@ -31,22 +31,35 @@
         <p class="text-slate-400 text-sm mt-2">En contratos</p>
       </div>
 
-      <!-- Card 4: Espacio para Laudus (Ej. Ventas) -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+      <!-- Card 4: Sincronización Laudus -->
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex flex-col">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-slate-500 text-sm font-medium uppercase">Integración</h3>
-          <span class="text-purple-500 text-2xl">🔗</span>
+          <h3 class="text-slate-500 text-sm font-medium uppercase">Sincronización</h3>
+          <span class="text-purple-500 text-2xl">🔄</span>
         </div>
-        <p class="text-3xl font-bold text-slate-800">Laudus</p>
-        <p class="text-green-500 text-sm mt-2">API Conectada</p>
+        
+        <p class="text-sm text-slate-500 mb-1">Última actualización:</p>
+        <p class="text-sm font-semibold text-slate-800 mb-4">
+          {{ syncStatus.lastSyncAt ? formatDate(syncStatus.lastSyncAt) : 'Nunca' }}
+        </p>
+        
+        <button 
+          @click="triggerSync" 
+          :disabled="syncing"
+          class="mt-auto w-full bg-blue-600 text-white py-2 rounded text-sm hover:bg-blue-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {{ syncing ? 'Sincronizando...' : 'Sincronizar Ahora' }}
+        </button>
+        
+        <p v-if="syncError" class="text-red-500 text-xs mt-2">{{ syncError }}</p>
       </div>
     </div>
 
-    <!-- Tabla de Resumen (La dejamos estática por ahora) -->
+    <!-- Tabla de Resumen -->
     <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
       <div class="p-4 border-b border-slate-200 flex justify-between items-center">
         <h3 class="font-semibold text-slate-700">Resumen del Sistema</h3>
-        <router-link to="/contracts" class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">
+        <router-link to="/contracts" class="bg-slate-800 text-white px-4 py-2 rounded text-sm hover:bg-slate-900">
           Ver Contratos
         </router-link>
       </div>
@@ -69,12 +82,20 @@ interface DashboardStats {
   totalAmount: number;
 }
 
+interface SyncStatus {
+  lastSyncAt: string | null;
+}
+
 const stats = ref<DashboardStats>({
   totalUsers: 0,
   totalContracts: 0,
   activeContracts: 0,
   totalAmount: 0,
 });
+
+const syncStatus = ref<SyncStatus>({ lastSyncAt: null });
+const syncing = ref(false);
+const syncError = ref('');
 
 const fetchStats = async () => {
   try {
@@ -85,12 +106,40 @@ const fetchStats = async () => {
   }
 };
 
-// Formatear números a formato moneda chilena (CLP)
+const fetchSyncStatus = async () => {
+  try {
+    const response = await api.get('/sync/status');
+    syncStatus.value = response.data;
+  } catch (error) {
+    console.error('Error al obtener estado de sync:', error);
+  }
+};
+
+const triggerSync = async () => {
+  syncing.value = true;
+  syncError.value = '';
+  try {
+    await api.post('/sync/now');
+    await fetchSyncStatus(); // Actualizar la fecha en la vista
+  } catch (error: any) {
+    // Si el backend nos bloquea por el límite de tiempo, mostramos el mensaje
+    syncError.value = error.response?.data?.message || 'Error al sincronizar.';
+  } finally {
+    syncing.value = false;
+  }
+};
+
+// Helpers visuales
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
 };
 
+const formatDate = (date: string) => {
+  return new Date(date).toLocaleString('es-CL', { dateStyle: 'medium', timeStyle: 'short' });
+};
+
 onMounted(() => {
   fetchStats();
+  fetchSyncStatus();
 });
 </script>

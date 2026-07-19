@@ -47,3 +47,23 @@ enum ContractStatus {
   EXPIRED
   CANCELLED
 }
+
+// ... tus modelos existentes ...
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+// ... tus modelos existentes ...
+
+model Customer {
+  customerId Int      @id // El ID original de Laudus
+  name       String
+  vatId      String?  // RUT
+  email      String?
+  phone      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
