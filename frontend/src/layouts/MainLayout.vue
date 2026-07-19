@@ -12,8 +12,8 @@
         <router-link to="/sales" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-800 hover:text-blue-400">
           🧾 Facturas de Venta
         </router-link>
-        <router-link to="/purchases" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-800 hover:text-blue-400">
-          📦 Compras
+        <router-link to="/users" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-800 hover:text-blue-400">
+          👤 Usuarios
         </router-link>
       </nav>
     </aside>
@@ -24,8 +24,10 @@
       <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6">
         <h2 class="text-lg font-semibold text-slate-700">Bienvenido al Sistema</h2>
         <div class="flex items-center space-x-4">
-          <span class="text-sm text-slate-500">admin@sgcl.cl</span>
-          <button class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded text-sm hover:bg-slate-200">Cerrar Sesión</button>
+          <span class="text-sm text-slate-500">{{ authStore.user?.username || 'Usuario' }}</span>
+          <button @click="handleLogout" class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded text-sm hover:bg-slate-200">
+            Cerrar Sesión
+          </button>
         </div>
       </header>
 
@@ -36,3 +38,16 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+
+const router = useRouter();
+const authStore = useAuthStore();
+
+const handleLogout = () => {
+  authStore.logout();
+  router.push('/login');
+};
+</script>

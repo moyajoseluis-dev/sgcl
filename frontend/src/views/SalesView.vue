@@ -112,7 +112,7 @@ const fetchInvoices = async () => {
   loading.value = true;
   invoices.value = []; // <--- AGREGA ESTO para limpiar la tabla inmediatamente
   try {
-    await authStore.login();
+    
     
     // Construimos los filtros.
     const filters = [];

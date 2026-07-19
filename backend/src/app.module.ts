@@ -5,8 +5,9 @@ import configuration from './config/configuration';
 import { validate } from './config/validation';
 import { AuthModule } from './modules/auth/auth.module';
 import { SalesModule } from './modules/sales/sales.module';
+import { UsersModule } from './modules/users/users.module'; // <--- Añadido
 import { LaudusSdkModule } from './laudus-sdk/laudus-sdk.module';
-import { PrismaModule } from './prisma/prisma.module'; // <--- Asegúrate de tener esto
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -16,10 +17,11 @@ import { PrismaModule } from './prisma/prisma.module'; // <--- Asegúrate de ten
       load: [configuration],
       validate,
     }),
-    PrismaModule, // <--- Y aquí
+    PrismaModule,
     AuthModule,
     LaudusSdkModule,
     SalesModule,
+    UsersModule, // <--- Añadido
   ],
 })
 export class AppModule {}
