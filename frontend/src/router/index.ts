@@ -5,12 +5,14 @@ import UsersView from '@/views/UsersView.vue';
 import LoginView from '@/views/LoginView.vue';
 import ContractsView from '@/views/ContractsView.vue';
 import { useAuthStore } from '@/stores/auth'; // <--- Esta línea es la que faltaba
+import PurchasesView from '@/views/PurchasesView.vue'; // <--- Nuevo
 
 const routes = [
   { path: '/login', name: 'login', component: LoginView, meta: { guestOnly: true } },
   { path: '/', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
   { path: '/sales', name: 'sales', component: SalesView, meta: { requiresAuth: true } },
   { path: '/users', name: 'users', component: UsersView, meta: { requiresAuth: true } },
+  { path: '/purchases', name: 'purchases', component: PurchasesView, meta: { requiresAuth: true } }, // <--- Nuevo
   { path: '/contracts', name: 'contracts', component: ContractsView, meta: { requiresAuth: true } },
 ];
 

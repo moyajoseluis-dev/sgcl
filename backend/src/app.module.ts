@@ -9,6 +9,7 @@ import { UsersModule } from './modules/users/users.module'; // <--- Añadido
 import { LaudusSdkModule } from './laudus-sdk/laudus-sdk.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ContractsModule } from './modules/contracts/contracts.module';
+import { PurchasesModule } from './modules/purchases/purchases.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ContractsModule } from './modules/contracts/contracts.module';
     SalesModule,
     UsersModule, // <--- Añadido
     ContractsModule,
+    PurchasesModule,
   ],
 })
 export class AppModule {}
