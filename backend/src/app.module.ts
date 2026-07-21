@@ -14,6 +14,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ScheduleModule } from '@nestjs/schedule'; // <--- Importar
 import { SyncModule } from './modules/sync/sync.module';
 import { CustomersModule } from './modules/customers/customers.module';
+import { NotificationsModule } from './modules/notifications/notifications.module'; // <--- Importado
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { CustomersModule } from './modules/customers/customers.module';
     DashboardModule, 
     SyncModule,
     CustomersModule,
+    NotificationsModule, // <--- Añadido aquí
     ScheduleModule.forRoot(), // <--- Añadir esto
   ],
 })
