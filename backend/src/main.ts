@@ -11,8 +11,10 @@ async function bootstrap(): Promise<void> {
   const configService = app.get(ConfigService);
 
   // Habilitar CORS para el frontend
-  app.enableCors();
-
+  app.enableCors({
+  origin: true, // Permite cualquier origen (ideal para Vercel)
+  credentials: true,
+});
   // Prefijo global para la API (ej. /api/v1/...)
   app.setGlobalPrefix('api');
   app.enableVersioning({
