@@ -89,14 +89,14 @@
 import { ref, onMounted } from 'vue';
 import MainLayout from '@/layouts/MainLayout.vue';
 import api from '@/services/api';
-import { useAuthStore } from '@/stores/auth';
+
 
 interface Invoice {
   salesInvoiceId: string;
   issuedDate: string;
 }
 
-const authStore = useAuthStore();
+
 const invoices = ref<Invoice[]>([]);
 const loading = ref(false);
 const currentPage = ref(1);
