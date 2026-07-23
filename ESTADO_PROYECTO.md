@@ -1,12 +1,11 @@
-🚀 SGCL - Sistema de Gestión y Control Laudus
+🚀 SGCL - Sistema de Gestión y Control Laudus (v1.0)
 Arquitectura General
-Frontend: Vue 3 + Vite + TailwindCSS 4 + Pinia + Axios + Chart.js (Puerto 5173)
-Backend: NestJS 11 + TypeScript Estricto (Sin any) (Puerto 3001)
-Base de Datos: PostgreSQL 16 (Gestionado con Prisma ORM 5)
-Infraestructura: Docker, Docker Compose
-Integraciones: Laudus API (SDK + Sync Híbrido), Wazzup API (WhatsApp), SMTP (Email)
-Estado Actual del Proyecto (Plan Original Completado ✅)
- Infraestructura base (Git, Docker Compose para Postgres/Redis).
+Frontend: Vue 3 + Vite + TailwindCSS 4 + Pinia + Axios + Chart.js (Desplegado en Vercel)
+Backend: NestJS 11 + TypeScript Estricto (Sin any) (Desplegado en Render)
+Base de Datos: PostgreSQL 16 (Gestionado con Prisma ORM 5) (Desplegado en Neon)
+Integraciones: Laudus API (SDK + Sync Híbrido), Wazzup API (WhatsApp), SMTP Bluehost (Email)
+Estado Actual del Proyecto (v1.0 Completada ✅)
+ Infraestructura base (Git, Docker Compose para entorno local).
  Configuración base de Backend (NestJS, TS estricto, ESLint, Prettier).
  Base de datos PostgreSQL con Prisma ORM (Modelos: User, Contract, Setting, Customer).
  Módulo de Autenticación real (JWT, Passport, Bcrypt).
@@ -19,8 +18,10 @@ Estado Actual del Proyecto (Plan Original Completado ✅)
  Dashboard dinámico con métricas de base de datos local, control de sincronización y Gráficos (Chart.js).
  Documentación Técnica (Informe de Diseño, Manual Técnico, Manual de Usuario).
  Motor de Comunicaciones (Notificaciones por WhatsApp y Email funcionando).
-Próximas Funcionalidades (Futuras)
+ Despliegue en Producción (Backend en Render, Frontend en Vercel, DB en Neon).
+Próximas Funcionalidades (Roadmap v2.0)
  Sincronización automática en background (Cron Jobs con @nestjs/schedule).
+ Sincronización de Facturas de Venta y Compra a base de datos local.
  Módulo de Productos local (Sincronizado).
  Exportación de reportes a Excel.
 Estructura de Carpetas Actual
