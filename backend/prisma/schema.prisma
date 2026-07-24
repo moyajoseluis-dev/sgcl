@@ -45,6 +45,11 @@ model Contract {
   costCenterId Int?
   costCenter   CostCenter?   @relation(fields: [costCenterId], references: [id])
   pettyCash    PettyCash?
+  
+  // ... para bodegas ...
+  
+  stockMovements StockMovement[] // <--- Añade esto
+
 }
 
 enum ContractStatus {
@@ -119,4 +124,32 @@ model Workflow {
   entityName  String   // A qué módulo aplica (ej. "CONTRACT", "PURCHASE")
   states      Json     // Configuración de estados y transiciones (máquina de estados)
   createdAt   DateTime @default(now())
+}
+
+// --- MÓDULO LOGÍSTICO V2.0 ---
+
+model Product {
+  id           Int             @id // El ID original de Laudus
+  sku          String          @unique
+  name         String
+  unit         String?
+  stockMovements StockMovement[]
+}
+
+model StockMovement {
+  id          Int               @id @default(autoincrement())
+  productId   Int
+  product     Product           @relation(fields: [productId], references: [id])
+  contractId  Int?              // Si el movimiento va asociado a un contrato/obra
+  contract    Contract?         @relation(fields: [contractId], references: [id])
+  type        StockMovementType
+  quantity    Float
+  description String?
+  createdAt   DateTime          @default(now())
+}
+
+enum StockMovementType {
+  OUT_TO_SITE    // Salida de bodega central a bodega periférica (obra)
+  CONSUMED       // Consumido en la obra (Se debe facturar)
+  RETURNED       // Retorno de obra a bodega central (No se consumió)
 }
