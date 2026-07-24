@@ -16,6 +16,7 @@ import { SyncModule } from './modules/sync/sync.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { NotificationsModule } from './modules/notifications/notifications.module'; // <--- Importado
 import { PettyCashModule } from './modules/petty-cash/petty-cash.module';
+import { LogisticsModule } from './modules/logistics/logistics.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { PettyCashModule } from './modules/petty-cash/petty-cash.module';
     SyncModule,
     CustomersModule,
     PettyCashModule,
+    LogisticsModule,
     NotificationsModule, // <--- Añadido aquí
     ScheduleModule.forRoot(), // <--- Añadir esto
   ],
