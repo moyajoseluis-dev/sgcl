@@ -17,6 +17,8 @@ model User {
   role      Role     @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  // V2.0 Relaciones
+  pettyCashes PettyCash[]
 }
 
 // Roles
@@ -39,6 +41,10 @@ model Contract {
   entityName  String         // Nombre del cliente o proveedor
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
+  // V2.0 Relaciones
+  costCenterId Int?
+  costCenter   CostCenter?   @relation(fields: [costCenterId], references: [id])
+  pettyCash    PettyCash?
 }
 
 enum ContractStatus {
@@ -66,4 +72,51 @@ model Customer {
   phone      String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+// --- NUEVOS MODELOS V2.0 ---
+
+model CostCenter {
+  id        Int       @id @default(autoincrement())
+  laudusId  String    @unique // El ID del Centro de Costo en Laudus
+  name      String
+  budget    Float     @default(0) // Presupuesto anual/mensual traído de Laudus
+  contracts Contract[]
+}
+
+model PettyCash {
+  id             Int               @id @default(autoincrement())
+  contractId     Int               @unique // Un fondo fijo por contrato/proyecto
+  contract       Contract          @relation(fields: [contractId], references: [id])
+  assignedAmount Float             @default(0) // Monto asignado inicial
+  currentBalance Float             @default(0) // Saldo actual disponible
+  responsibleId  Int
+  responsible    User              @relation(fields: [responsibleId], references: [id])
+  expenses       PettyCashExpense[]
+}
+
+model PettyCashExpense {
+  id          Int           @id @default(autoincrement())
+  pettyCashId Int
+  pettyCash   PettyCash     @relation(fields: [pettyCashId], references: [id])
+  amount      Float
+  concept     String
+  receiptUrl  String?       // URL de la boleta o factura subida
+  status      ExpenseStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+enum ExpenseStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Workflow {
+  id          Int      @id @default(autoincrement())
+  name        String
+  entityName  String   // A qué módulo aplica (ej. "CONTRACT", "PURCHASE")
+  states      Json     // Configuración de estados y transiciones (máquina de estados)
+  createdAt   DateTime @default(now())
 }
