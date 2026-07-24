@@ -21,6 +21,12 @@
         <router-link to="/customers" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-800 hover:text-blue-400">
           👥 Clientes
         </router-link>
+        <router-link to="/contracts" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-800 hover:text-blue-400">
+          📄 Contratos
+        </router-link>
+        <router-link to="/petty-cash" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-800 hover:text-blue-400">
+          💰 Fondo Fijo
+        </router-link>
         
         <!-- v-if: Solo visible para administradores -->
         <router-link v-if="authStore.isAdmin" to="/users" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-800 hover:text-blue-400">
