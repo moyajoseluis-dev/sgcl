@@ -22,9 +22,10 @@
             <th class="px-6 py-3">Estado</th>
             <th class="px-6 py-3">Vencimiento</th>
             <th class="px-6 py-3 text-center">Acciones</th>
+            
           </tr>
         </thead>
-        <tbody>
+                <tbody>
           <tr v-if="contracts.length === 0">
             <td colspan="6" class="px-6 py-8 text-center text-slate-400">No hay contratos registrados.</td>
           </tr>
@@ -38,9 +39,10 @@
               </span>
             </td>
             <td class="px-6 py-4">{{ formatDate(contract.endDate) }}</td>
-            <td class="px-6 py-4 text-center space-x-2">
-              <button @click="openEditModal(contract)" class="text-blue-600 hover:text-blue-800 text-xs font-semibold">Editar</button>
-              <button @click="deleteContract(contract.id)" class="text-red-600 hover:text-red-800 text-xs font-semibold">Eliminar</button>
+            <td class="px-6 py-4 text-center">
+              <button @click="goToDetail(contract.id)" class="bg-slate-100 text-slate-700 px-3 py-1 rounded text-xs hover:bg-slate-200 font-semibold">
+                Ver Detalle
+              </button>
             </td>
           </tr>
         </tbody>
@@ -105,6 +107,7 @@
 import { ref, onMounted } from 'vue';
 import MainLayout from '@/layouts/MainLayout.vue';
 import api from '@/services/api';
+import { useRouter } from 'vue-router';
 
 interface Contract {
   id: number;
@@ -199,6 +202,12 @@ const deleteContract = async (id: number) => {
     console.error('Error al eliminar:', error);
     alert('No se pudo eliminar el contrato.');
   }
+};
+
+const router = useRouter();
+
+const goToDetail = (id: number) => {
+  router.push(`/contracts/${id}`);
 };
 
 // Helpers visuales
