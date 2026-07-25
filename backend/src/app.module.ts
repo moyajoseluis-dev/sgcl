@@ -17,6 +17,12 @@ import { CustomersModule } from './modules/customers/customers.module';
 import { NotificationsModule } from './modules/notifications/notifications.module'; // <--- Importado
 import { PettyCashModule } from './modules/petty-cash/petty-cash.module';
 import { LogisticsModule } from './modules/logistics/logistics.module';
+import { TasksModule } from './modules/tasks/tasks.module';
+import { BillingModule } from './modules/billing/billing.module';
+import { DocumentsModule } from './modules/documents/documents.module';
+import { ServeStaticModule } from '@nestjs/serve-static'; // Para servir los archivos estáticos
+import { join } from 'path';
+
 
 @Module({
   imports: [
@@ -38,6 +44,12 @@ import { LogisticsModule } from './modules/logistics/logistics.module';
     CustomersModule,
     PettyCashModule,
     LogisticsModule,
+    TasksModule,
+    BillingModule,
+    DocumentsModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',}),
     NotificationsModule, // <--- Añadido aquí
     ScheduleModule.forRoot(), // <--- Añadir esto
   ],

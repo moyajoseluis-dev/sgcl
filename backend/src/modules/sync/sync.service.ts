@@ -35,37 +35,43 @@ export class SyncService {
     let syncedProducts = 0;
 
     try {
-      // --- SINCRONIZACIÓN DE CLIENTES ---
+            // --- SINCRONIZACIÓN DE CLIENTES ---
       // 1. Pedir clientes a Laudus (Traemos los primeros 1000)
       const response: unknown = await this.customersRepo.list({
         options: { offset: 0, limit: 1000 },
-        fields: ["customerId", "name", "vatId", "email", "phone1"], // <--- Cambiado a phone1
+        fields: ["customerId", "name", "VATId", "email", "phone1"], // <--- Laudus exige 'customerId' y 'VATId'
         filterBy: [],
-        orderBy: [{ field: "customerId", direction: "ASC" }]
+        orderBy: [{ field: "customerId", direction: "ASC" }] // <--- Laudus exige 'customerId'
       });
 
       // 2. Parsear la respuesta
       let customers: any[] = [];
       if (typeof response === 'string') {
         customers = response.split('\n').slice(1).map(line => {
-          const [id, name, vatId, email, phone1] = line.split(','); // <--- Cambiado a phone1
+          const [customerId, name, vatId, email, phone1] = line.split(',');
           return {
-            customerId: Number(id?.replace(/"/g, '')),
+            id: Number(customerId?.replace(/"/g, '')), // Mapeamos a 'id' para nuestra DB
             name: name?.replace(/"/g, '') || '',
             vatId: vatId?.replace(/"/g, '') || null,
             email: email?.replace(/"/g, '') || null,
-            phone: phone1?.replace(/"/g, '') || null, // Lo guardamos en nuestro modelo como 'phone'
+            phone: phone1?.replace(/"/g, '') || null,
           };
-        }).filter(c => c.customerId);
+        }).filter(c => c.id);
       } else if (Array.isArray(response)) {
-        // Si viene en JSON, mapeamos phone1 a phone
+        // Si viene en JSON, mapeamos los campos de Laudus a nuestra DB
         customers = (response as any[]).map(c => ({
-          ...c,
+          id: c.customerId,
+          name: c.name,
+          vatId: c.VATId,
+          email: c.email,
           phone: c.phone1
         }));
       } else if (response && typeof response === 'object' && 'rows' in response) {
         customers = ((response as any).rows as any[]).map(c => ({
-          ...c,
+          id: c.customerId,
+          name: c.name,
+          vatId: c.VATId,
+          email: c.email,
           phone: c.phone1
         }));
       }
@@ -73,15 +79,15 @@ export class SyncService {
       // 3. Guardar en nuestra base de datos local (Upsert)
       for (const customer of customers) {
         await this.prisma.customer.upsert({
-          where: { customerId: customer.customerId },
+          where: { id: customer.id }, // Guardamos con 'id'
           update: {
             name: customer.name,
             vatId: customer.vatId,
             email: customer.email,
-            phone: customer.phone, // Guardamos el phone mapeado
+            phone: customer.phone,
           },
           create: {
-            customerId: customer.customerId,
+            id: customer.id, // Guardamos con 'id'
             name: customer.name,
             vatId: customer.vatId,
             email: customer.email,

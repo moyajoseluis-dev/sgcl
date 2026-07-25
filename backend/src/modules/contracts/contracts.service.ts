@@ -18,9 +18,29 @@ export class ContractsService {
   }
 
   async findOne(id: number) {
-    const contract = await this.prisma.contract.findUnique({ where: { id } });
+    const contract = await this.prisma.contract.findUnique({
+      where: { id },
+      include: {
+        establishment: true,
+        pettyCash: true,
+        costCenter: true,
+      }
+    });
+
     if (!contract) throw new NotFoundException('Contrato no encontrado');
-    return contract;
+
+    // Simulación de KPIs (Luego se reemplazará por datos reales de Laudus)
+    return {
+      ...contract,
+      kpis: {
+        facturado: 420000000,
+        cobrado: 350000000,
+        costo: 290000000,
+        margen: 31, // Porcentaje
+        avance: contract.progress || 48, // Porcentaje
+        documentosPendientes: 17
+      }
+    };
   }
 
   update(id: number, dto: UpdateContractDto) {

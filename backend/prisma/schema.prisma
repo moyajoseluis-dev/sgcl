@@ -53,6 +53,8 @@ model Contract {
   stockMovements  StockMovement[]
   paymentStatuses PaymentStatus[]
   tasks           ContractTask[]
+  billingCycles BillingCycle[]
+  documents ContractDocument[]
 }
 
 enum ContractStatus {
@@ -196,4 +198,46 @@ enum ContractType {
   WORK          // Obras
   SUPPLY        // Suministros
   RENTAL        // Arriendos
+}
+// --- MÓDULO DE CIERRE Y PREFACTURAS ---
+
+model BillingCycle {
+  id           Int               @id @default(autoincrement())
+  contractId   Int
+  contract     Contract          @relation(fields: [contractId], references: [id])
+  period       String            // Ej: "Octubre 2026"
+  totalAmount  Float             @default(0)
+  status       BillingCycleStatus @default(DRAFT)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  
+  documents    BillingDocument[]
+}
+
+enum BillingCycleStatus {
+  DRAFT         // En armado (faltan docs o cálculo)
+  SUBMITTED     // Enviado al cliente (esperando firma)
+  APPROVED      // Aprobado por el cliente (Listo para facturar en Laudus)
+  INVOICED      // Facturado en Laudus (Cerrado)
+  REJECTED      // Rechazado por el cliente
+}
+
+model BillingDocument {
+  id            Int          @id @default(autoincrement())
+  billingCycleId Int
+  billingCycle  BillingCycle @relation(fields: [billingCycleId], references: [id])
+  docType       String       // F30, F30_1, ATTENDANCE, EXPENSE_REPORT, EXECUTION_REPORT, SIGNED_STATEMENT
+  fileName      String
+  fileUrl       String       // URL donde se guarda el archivo
+  uploadedAt    DateTime     @default(now())
+}
+
+model ContractDocument {
+  id          Int      @id @default(autoincrement())
+  contractId  Int
+  contract    Contract @relation(fields: [contractId], references: [id])
+  fileName    String
+  fileUrl     String   // Ruta local o URL en la nube
+  fileType    String   // PDF, WORD, EXCEL, IMAGE, OTHER
+  uploadedAt  DateTime @default(now())
 }

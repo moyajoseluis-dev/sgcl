@@ -9,6 +9,7 @@ import PurchasesView from '@/views/PurchasesView.vue'; // <--- Nuevo
 import CustomersView from '@/views/CustomersView.vue'; // <--- Nuevo
 import PettyCashView from '@/views/PettyCashView.vue';
 import LogisticsView from '@/views/LogisticsView.vue';
+import ContractDetailView from '@/views/ContractDetailView.vue'
 
 
 const routes = [
@@ -21,6 +22,12 @@ const routes = [
   { path: '/customers', name: 'customers', component: CustomersView, meta: { requiresAuth: true } }, // <--- Nuevo
   { path: '/purchases', name: 'purchases', component: PurchasesView, meta: { requiresAuth: true } }, // <--- Nuevo
   { path: '/contracts', name: 'contracts', component: ContractsView, meta: { requiresAuth: true } },
+  { 
+    path: '/contracts/:id', 
+    name: 'contract-detail', 
+    component: ContractDetailView, 
+    meta: { requiresAuth: true } 
+  },
 ];
 
 const router = createRouter({
