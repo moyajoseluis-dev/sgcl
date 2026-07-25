@@ -31,25 +31,28 @@ enum Role {
 // ... (tu código existente de User y Role)
 
 model Contract {
-  id          Int            @id @default(autoincrement())
-  title       String
-  description String?
-  status      ContractStatus @default(ACTIVE)
-  startDate   DateTime
-  endDate     DateTime
-  amount      Float
-  entityName  String         // Nombre del cliente o proveedor
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  // V2.0 Relaciones
-  costCenterId Int?
-  costCenter   CostCenter?   @relation(fields: [costCenterId], references: [id])
-  pettyCash    PettyCash?
+  id               Int              @id @default(autoincrement())
+  title            String
+  description      String?
+  status           ContractStatus   @default(ACTIVE)
+  type             ContractType     @default(SERVICE) // Para cambiar la UI dinámicamente
+  startDate        DateTime
+  endDate          DateTime
+  amount           Float            // Monto total adjudicado
+  entityName       String
+  progress         Float            @default(0) // Porcentaje de avance (0-100)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
   
-  // ... para bodegas ...
-  
-  stockMovements StockMovement[] // <--- Añade esto
-
+  // Relaciones
+  establishmentId Int?
+  establishment   Establishment?   @relation(fields: [establishmentId], references: [id])
+  costCenterId    Int?
+  costCenter      CostCenter?      @relation(fields: [costCenterId], references: [id])
+  pettyCash       PettyCash?
+  stockMovements  StockMovement[]
+  paymentStatuses PaymentStatus[]
+  tasks           ContractTask[]
 }
 
 enum ContractStatus {
@@ -69,16 +72,27 @@ model Setting {
 
 // ... tus modelos existentes ...
 
+// --- MODELOS ACTUALIZADOS V2.1 ---
+
 model Customer {
-  customerId Int      @id // El ID original de Laudus
-  name       String
-  vatId      String?  // RUT
-  email      String?
-  phone      String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id           Int              @id // ID de Laudus
+  name         String
+  vatId        String?
+  email        String?
+  phone        String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  establishments Establishment[]
 }
 
+model Establishment {
+  id          Int       @id @default(autoincrement())
+  name        String    // Ej: Hospital Sotero del Río
+  address     String?
+  customerId  Int
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  contracts   Contract[]
+}
 // --- NUEVOS MODELOS V2.0 ---
 
 model CostCenter {
@@ -152,4 +166,34 @@ enum StockMovementType {
   OUT_TO_SITE    // Salida de bodega central a bodega periférica (obra)
   CONSUMED       // Consumido en la obra (Se debe facturar)
   RETURNED       // Retorno de obra a bodega central (No se consumió)
+}
+
+model PaymentStatus {
+  id          Int      @id @default(autoincrement())
+  contractId  Int
+  contract    Contract @relation(fields: [contractId], references: [id])
+  number      Int      // Ej: Estado de Pago N°1
+  period      String   // Ej: "Enero 2025"
+  totalAmount Float
+  status      String   @default("DRAFT") // DRAFT, SUBMITTED, APPROVED, PAID
+  createdAt   DateTime @default(now())
+}
+
+model ContractTask {
+  id          Int      @id @default(autoincrement())
+  contractId  Int
+  contract    Contract @relation(fields: [contractId], references: [id])
+  description String
+  type        String   // PREVENTIVE, CORRECTIVE, WORK, OTHER
+  status      String   @default("PENDING") // PENDING, EXECUTED, RESCHEDULED
+  unitPrice   Float    @default(0) // Tarifa para la prefactura
+  executedAt  DateTime?
+  createdAt   DateTime @default(now())
+}
+
+enum ContractType {
+  SERVICE       // Mantenciones, Climatización
+  WORK          // Obras
+  SUPPLY        // Suministros
+  RENTAL        // Arriendos
 }
