@@ -39,4 +39,9 @@ export class ContractsController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.contractsService.remove(id);
   }
+
+  @Get(':id/timeline')
+  getTimeline(@Param('id', ParseIntPipe) id: number) {
+    return this.contractsService.getTimeline(id);
+  }
 }

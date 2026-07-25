@@ -1,17 +1,7 @@
 <template>
   <MainLayout>
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-      <!-- Card 1: Usuarios -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-slate-500 text-sm font-medium uppercase">Usuarios</h3>
-          <span class="text-blue-500 text-2xl">👥</span>
-        </div>
-        <p class="text-3xl font-bold text-slate-800">{{ stats.totalUsers }}</p>
-        <p class="text-slate-400 text-sm mt-2">Activos en el sistema</p>
-      </div>
-      
-      <!-- Card 2: Contratos Activos -->
+     <!-- Card 1: Contratos Activos -->
       <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-slate-500 text-sm font-medium uppercase">Contratos Activos</h3>
@@ -21,14 +11,24 @@
         <p class="text-slate-400 text-sm mt-2">de {{ stats.totalContracts }} totales</p>
       </div>
 
-      <!-- Card 3: Monto Total Contratos -->
+      <!-- Card 2: Monto Total Adjudicado -->
       <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-slate-500 text-sm font-medium uppercase">Monto Total</h3>
+          <h3 class="text-slate-500 text-sm font-medium uppercase">Monto Vigente</h3>
           <span class="text-yellow-500 text-2xl">💰</span>
         </div>
         <p class="text-3xl font-bold text-slate-800">{{ formatCurrency(stats.totalAmount) }}</p>
         <p class="text-slate-400 text-sm mt-2">En contratos</p>
+      </div>
+
+      <!-- Card 3: Facturado (Estados de Pago) -->
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-slate-500 text-sm font-medium uppercase">Procesado (EP)</h3>
+          <span class="text-blue-500 text-2xl">🧾</span>
+        </div>
+        <p class="text-3xl font-bold text-slate-800">{{ formatCurrency(stats.totalFacturado) }}</p>
+        <p class="text-slate-400 text-sm mt-2">Estados de pago generados</p>
       </div>
 
       <!-- Card 4: Sincronización Laudus -->
@@ -87,14 +87,16 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import MainLayout from '@/layouts/MainLayout.vue';
 import api from '@/services/api';
 
-// Registrar componentes de Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface DashboardStats {
   totalUsers: number;
   totalContracts: number;
   activeContracts: number;
+  pendingTasks: number;
   totalAmount: number;
+  totalFacturado: number;
+  pettyCashSpent: number;
   chartData: any;
 }
 
@@ -102,7 +104,10 @@ const stats = ref<DashboardStats>({
   totalUsers: 0,
   totalContracts: 0,
   activeContracts: 0,
+  pendingTasks: 0,
   totalAmount: 0,
+  totalFacturado: 0,
+  pettyCashSpent: 0,
   chartData: null,
 });
 
@@ -110,7 +115,6 @@ const syncStatus = ref<{ lastSyncAt: string | null }>({ lastSyncAt: null });
 const syncing = ref(false);
 const syncError = ref('');
 
-// Opciones del gráfico (ocultar leyenda para que se vea más limpio)
 const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
@@ -152,6 +156,7 @@ const triggerSync = async () => {
   }
 };
 
+// Helpers
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
 };

@@ -285,6 +285,34 @@
         </div>
 
         <!-- Placeholder para las demás pestañas -->
+                <!-- Contenido para la pestaña de Cronología -->
+        <div v-else-if="activeTab === 'Cronología'">
+          <h3 class="text-lg font-semibold text-slate-800 mb-6">Línea de Tiempo del Contrato</h3>
+          
+          <div class="relative border-l-2 border-slate-200 pl-6 space-y-8 ml-4">
+            
+            <div v-if="timeline.length === 0" class="text-slate-400">
+              No hay eventos registrados.
+            </div>
+
+            <div v-for="(event, index) in timeline" :key="index" class="relative">
+              <!-- Punto en la línea -->
+              <span :class="getTimelineDotClass(event.type)" class="absolute -left-[31px] top-1 w-4 h-4 rounded-full border-2 border-white"></span>
+              
+              <!-- Tarjeta del evento -->
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                <div class="flex justify-between items-center mb-1">
+                  <h4 class="font-semibold text-slate-800 text-sm">{{ event.title }}</h4>
+                  <span class="text-xs text-slate-400">{{ new Date(event.date).toLocaleDateString('es-CL', { year: 'numeric', month: 'short', day: 'numeric' }) }}</span>
+                </div>
+                <p class="text-sm text-slate-600">{{ event.description }}</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Placeholder para las demás pestañas -->
         <div v-else class="text-center text-slate-400 py-10">
           Módulo de {{ activeTab }} en construcción.
         </div>
@@ -344,6 +372,7 @@ const activeTab = ref('Resumen');
 const tasks = ref<any[]>([]);
 const cycles = ref<any[]>([]);
 const documents = ref<any[]>([]);
+const timeline = ref<any[]>([]);
 const selectedFile = ref<File | null>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
 
@@ -367,6 +396,7 @@ const fetchContract = async () => {
     fetchTasks(); // Cargar tareas apenas carga el contrato
     fetchCycles();
     fetchDocuments();
+    fetchTimeline();
   } catch (error) {
     console.error('Error al obtener el contrato:', error);
   }
@@ -379,6 +409,16 @@ const fetchTasks = async () => {
     tasks.value = response.data;
   } catch (error) {
     console.error('Error al obtener tareas:', error);
+  }
+};
+
+const fetchTimeline = async () => {
+  if (!contract.value) return;
+  try {
+    const response = await api.get(`/contracts/${contract.value.id}/timeline`);
+    timeline.value = response.data;
+  } catch (error) {
+    console.error('Error al obtener cronología:', error);
   }
 };
 
@@ -579,6 +619,17 @@ const translateDocType = (docType: string) => {
     case 'EXPENSE_REPORT': return 'Informe Gastos';
     case 'EXECUTION_REPORT': return 'Informe Ejecución';
     default: return docType;
+  }
+};
+
+const getTimelineDotClass = (type: string) => {
+  switch (type) {
+    case 'CONTRACT_CREATED': return 'bg-blue-500';
+    case 'TASK_EXECUTED': return 'bg-green-500';
+    case 'TASK_CREATED': return 'bg-yellow-500';
+    case 'DOC_UPLOADED': return 'bg-purple-500';
+    case 'BILLING_CYCLE': return 'bg-indigo-500';
+    default: return 'bg-slate-400';
   }
 };
 

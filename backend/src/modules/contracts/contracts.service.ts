@@ -53,4 +53,48 @@ export class ContractsService {
   remove(id: number) {
     return this.prisma.contract.delete({ where: { id } });
   }
+
+  // Obtener la cronología unificada de un contrato
+  async getTimeline(id: number) {
+    const contract = await this.prisma.contract.findUnique({ where: { id } });
+    if (!contract) throw new NotFoundException('Contrato no encontrado');
+
+    // 1. Obtener eventos de distintas tablas
+    const tasks = await this.prisma.contractTask.findMany({ where: { contractId: id } });
+    const docs = await this.prisma.contractDocument.findMany({ where: { contractId: id } });
+    const cycles = await this.prisma.billingCycle.findMany({ where: { contractId: id } });
+
+    // 2. Formatear todo a una estructura común
+    const events = [
+      {
+        date: contract.createdAt,
+        type: 'CONTRACT_CREATED',
+        title: 'Contrato Creado',
+        description: `El contrato "${contract.title}" fue ingresado al sistema.`
+      },
+      ...tasks.map(t => ({
+        date: t.executedAt || t.createdAt,
+        type: t.status === 'EXECUTED' ? 'TASK_EXECUTED' : 'TASK_CREATED',
+        title: `Tarea: ${t.description}`,
+        description: t.status === 'EXECUTED' ? `Ejecutada por valor de $${t.unitPrice}` : 'Tarea programada/pendiente.'
+      })),
+      ...docs.map(d => ({
+        date: d.uploadedAt,
+        type: 'DOC_UPLOADED',
+        title: `Documento Subido: ${d.fileName}`,
+        description: `Archivo de tipo ${d.fileType} adjuntado al contrato.`
+      })),
+      ...cycles.map(c => ({
+        date: c.createdAt,
+        type: 'BILLING_CYCLE',
+        title: `Estado de Pago: ${c.period}`,
+        description: `Ciclo generado por monto de $${c.totalAmount}. Estado: ${c.status}.`
+      })),
+    ];
+
+    // 3. Ordenar por fecha descendente (más nuevo arriba)
+    return events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }
+
+
 }
