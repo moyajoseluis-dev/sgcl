@@ -20,6 +20,7 @@ import { LogisticsModule } from './modules/logistics/logistics.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { DocumentsModule } from './modules/documents/documents.module';
+import { LogsModule } from './modules/logs/logs.module';
 import { ServeStaticModule } from '@nestjs/serve-static'; // Para servir los archivos estáticos
 import { join } from 'path';
 
@@ -46,6 +47,7 @@ import { join } from 'path';
     LogisticsModule,
     TasksModule,
     BillingModule,
+    LogsModule,
     DocumentsModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),

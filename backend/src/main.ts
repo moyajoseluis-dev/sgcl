@@ -2,6 +2,9 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AuditInterceptor } from './common/interceptors/audit.interceptor';
+import { PrismaService } from './prisma/prisma.service';
+
 
 import { AppModule } from './app.module';
 
@@ -46,6 +49,13 @@ async function bootstrap(): Promise<void> {
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('swagger', app, swaggerDocument);
 
+ 
+ // Activar el Interceptor de Auditoría
+  const prismaService = app.get(PrismaService);
+  app.useGlobalInterceptors(new AuditInterceptor(prismaService));
+ 
+ 
+ 
   // Levantar el servidor
   const port = configService.get<number>('app.port') ?? 3001;
   

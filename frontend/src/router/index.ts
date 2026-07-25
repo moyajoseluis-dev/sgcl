@@ -10,6 +10,7 @@ import CustomersView from '@/views/CustomersView.vue'; // <--- Nuevo
 import PettyCashView from '@/views/PettyCashView.vue';
 import LogisticsView from '@/views/LogisticsView.vue';
 import ContractDetailView from '@/views/ContractDetailView.vue'
+import LogsView from '@/views/LogsView.vue';
 
 
 const routes = [
@@ -17,6 +18,7 @@ const routes = [
   { path: '/', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
   { path: '/sales', name: 'sales', component: SalesView, meta: { requiresAuth: true } },
   { path: '/users', name: 'users', component: UsersView, meta: { requiresAuth: true } },
+  { path: '/logs', name: 'logs', component: LogsView, meta: { requiresAuth: true } },
   { path: '/logistics', name: 'logistics', component: LogisticsView, meta: { requiresAuth: true } },
   { path: '/petty-cash', name: 'petty-cash', component: PettyCashView, meta: { requiresAuth: true } },
   { path: '/customers', name: 'customers', component: CustomersView, meta: { requiresAuth: true } }, // <--- Nuevo
