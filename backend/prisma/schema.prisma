@@ -192,6 +192,8 @@ model ContractTask {
   unitPrice   Float    @default(0) // Tarifa para la prefactura
   executedAt  DateTime?
   createdAt   DateTime @default(now())
+  startDate   DateTime? // <--- AÑADIDO PARA GANTT/CALENDARIO
+  dueDate     DateTime? // <--- AÑADIDO PARA GANTT/CALENDARIO
 }
 
 enum ContractType {

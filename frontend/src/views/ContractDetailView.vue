@@ -318,6 +318,59 @@
           </div>
         </div>
 
+               <!-- Contenido para la pestaña de Gantt -->
+        <div v-else-if="activeTab === 'Gantt'">
+          <h3 class="text-lg font-semibold text-slate-800 mb-4">Cronograma de Tareas (Gantt)</h3>
+          
+          <div class="space-y-3">
+            <div v-if="tasks.length === 0" class="text-slate-400 text-sm">No hay tareas programadas.</div>
+            
+            <div v-for="task in tasks" :key="task.id" class="flex items-center gap-4">
+              <!-- Nombre de la tarea -->
+              <div class="w-1/4 text-sm font-medium text-slate-700 truncate">
+                {{ task.description }}
+              </div>
+              
+              <!-- Barra de Gantt -->
+              <div class="flex-1 bg-slate-100 rounded-full h-4 relative overflow-hidden">
+                <div 
+                  v-if="task.startDate && task.dueDate"
+                  :class="task.status === 'EXECUTED' ? 'bg-green-500' : 'bg-blue-500'"
+                  class="h-4 rounded-full absolute"
+                  :style="getGanttBarStyle(task)"
+                  :title="`${new Date(task.startDate).toLocaleDateString('es-CL')} - ${new Date(task.dueDate).toLocaleDateString('es-CL')}`"
+                ></div>
+                <span v-else class="text-xs text-slate-400 absolute inset-0 flex items-center justify-center">
+                  Sin fechas programadas
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Placeholder para las demás pestañas -->
+                <!-- Contenido para la pestaña de Calendario -->
+        <div v-else-if="activeTab === 'Calendario'">
+          <div class="flex justify-between items-center mb-6">
+            <button @click="prevMonth" class="bg-slate-100 px-3 py-1 rounded hover:bg-slate-200 text-sm">← Mes Anterior</button>
+            <h3 class="text-lg font-semibold text-slate-800">{{ formatMonthYear(calendarMonth) }}</h3>
+            <button @click="nextMonth" class="bg-slate-100 px-3 py-1 rounded hover:bg-slate-200 text-sm">Mes Siguiente →</button>
+          </div>
+
+          <div class="grid grid-cols-7 gap-1 text-center text-xs text-slate-500 font-bold mb-2">
+            <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
+          </div>
+
+          <div class="grid grid-cols-7 gap-1">
+           <div v-for="(day, index) in calendarDays" :key="index" class="min-h-[80px] border border-slate-100 p-1 rounded">
+              <p v-if="day.date" class="text-xs text-slate-400 mb-1">{{ day.date.getDate() }}</p>
+              <div v-for="task in day.tasks" :key="task.id" class="bg-blue-100 text-blue-800 text-xs rounded px-1 py-0.5 mb-0.5 truncate">
+                {{ task.description }}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Placeholder para las demás pestañas -->
         <div v-else class="text-center text-slate-400 py-10">
           Módulo de {{ activeTab }} en construcción.
@@ -342,6 +395,7 @@
             <label class="block text-sm font-medium text-slate-700 mb-1">Descripción</label>
             <input v-model="taskData.description" type="text" class="w-full border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: Mantención mensual equipo 1" />
           </div>
+          
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Tipo</label>
             <select v-model="taskData.type" class="w-full border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -351,23 +405,37 @@
               <option value="OTHER">Otro</option>
             </select>
           </div>
+          
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Valor Unitario ($)</label>
             <input v-model.number="taskData.unitPrice" type="number" class="w-full border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">Fecha Inicio</label>
+              <input v-model="taskData.startDate" type="date" class="w-full border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">Fecha Vencimiento</label>
+              <input v-model="taskData.dueDate" type="date" class="w-full border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+          </div>
         </div>
+        
         <div class="p-4 border-t border-slate-200 flex justify-end gap-2">
           <button @click="closeTaskModal" class="px-4 py-2 bg-slate-100 text-slate-700 rounded text-sm hover:bg-slate-200">Cancelar</button>
           <button @click="saveTask" class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Guardar</button>
         </div>
       </div>
     </div>
+    
 
   </MainLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import MainLayout from '@/layouts/MainLayout.vue';
 import api from '@/services/api';
@@ -385,13 +453,15 @@ const fileInput = ref<HTMLInputElement | null>(null);
 
 const newDocData = ref<Record<number, { docType: string; fileName: string; fileUrl: string }>>({});
 
-const tabs = ['Resumen', 'Finanzas', 'Operación', 'Documentos', 'Estados de Pago', 'Gantt', 'Cronología'];
+const tabs = ['Resumen', 'Finanzas', 'Operación', 'Documentos', 'Estados de Pago', 'Gantt', 'Calendario','Cronología'];
 
 const showTaskModal = ref(false);
 const taskData = ref({
   description: '',
   type: 'PREVENTIVE',
   unitPrice: 0,
+  startDate: '', // <--- Añadido
+  dueDate: '',   // <--- Añadido
 });
 
 const fetchContract = async () => {
@@ -429,7 +499,7 @@ const fetchTimeline = async () => {
 };
 
 const openTaskModal = () => {
-  taskData.value = { description: '', type: 'PREVENTIVE', unitPrice: 0 };
+  taskData.value = { description: '', type: 'PREVENTIVE', unitPrice: 0, startDate: '', dueDate: '' };
   showTaskModal.value = true;
 };
 
@@ -585,6 +655,48 @@ const downloadReport = async (cycleId: number) => {
   }
 };
 
+// --- Lógica del Calendario ---
+const calendarMonth = ref(new Date());
+
+const nextMonth = () => {
+  calendarMonth.value = new Date(calendarMonth.value.getFullYear(), calendarMonth.value.getMonth() + 1, 1);
+};
+const prevMonth = () => {
+  calendarMonth.value = new Date(calendarMonth.value.getFullYear(), calendarMonth.value.getMonth() - 1, 1);
+};
+
+const calendarDays = computed(() => {
+  const year = calendarMonth.value.getFullYear();
+  const month = calendarMonth.value.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  
+  // Ajustar para empezar en Lunes (0=Domingo en JS, lo convertimos a Lunes=0)
+  let startDayOfWeek = firstDay.getDay() - 1;
+  if (startDayOfWeek < 0) startDayOfWeek = 6; // Si es Domingo
+
+  const days = [];
+  // Días vacíos al inicio
+  for (let i = 0; i < startDayOfWeek; i++) {
+    days.push({ date: null, tasks: [] });
+  }
+  // Días del mes
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    const date = new Date(year, month, d);
+    const dayTasks = tasks.value.filter(task => {
+      if (!task.dueDate) return false;
+      const taskDate = new Date(task.dueDate);
+      return taskDate.getDate() === d && taskDate.getMonth() === month && taskDate.getFullYear() === year;
+    });
+    days.push({ date, tasks: dayTasks });
+  }
+  
+  return days;
+});
+
+const formatMonthYear = (date: Date) => {
+  return new Intl.DateTimeFormat('es-CL', { month: 'long', year: 'numeric' }).format(date);
+};
 // Helpers
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
@@ -656,6 +768,32 @@ const getTimelineDotClass = (type: string) => {
     case 'BILLING_CYCLE': return 'bg-indigo-500';
     default: return 'bg-slate-400';
   }
+};
+
+// Calcula el ancho y posición de la barra de Gantt basado en las fechas
+const getGanttBarStyle = (task: any) => {
+  if (!task.startDate || !task.dueDate) return { width: '0%', left: '0%' };
+  
+  const start = new Date(task.startDate).getTime();
+  const end = new Date(task.dueDate).getTime();
+  const today = new Date().getTime();
+  
+  // Si la tarea ya terminó y está ejecutada, ocupa el 100%
+  if (task.status === 'EXECUTED' || today > end) {
+    return { width: '100%', left: '0%' };
+  }
+  
+  // Si aún no empieza
+  if (today < start) {
+    return { width: '100%', left: '0%', opacity: '0.3' }; // Barra tenue
+  }
+  
+  // Si está en progreso, calculamos el porcentaje avanzado hoy
+  const totalDuration = end - start;
+  const elapsed = today - start;
+  const progress = Math.min(100, (elapsed / totalDuration) * 100);
+  
+  return { width: '100%', left: '0%', clipPath: `inset(0 ${100 - progress}% 0 0)` };
 };
 
 // Si el usuario cambia de contrato estando en la misma vista
