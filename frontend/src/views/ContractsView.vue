@@ -153,19 +153,7 @@ const openCreateModal = () => {
   showModal.value = true;
 };
 
-const openEditModal = (contract: Contract) => {
-  editingContract.value = contract;
-  formData.value = { 
-    title: contract.title, 
-    entityName: contract.entityName, 
-    amount: contract.amount, 
-    startDate: contract.startDate.split('T')[0], 
-    endDate: contract.endDate.split('T')[0], 
-    status: contract.status, 
-    description: contract.description || '' 
-  };
-  showModal.value = true;
-};
+
 
 const closeModal = () => {
   showModal.value = false;
@@ -193,16 +181,7 @@ const saveContract = async () => {
   }
 };
 
-const deleteContract = async (id: number) => {
-  if (!confirm('¿Estás seguro de eliminar este contrato?')) return;
-  try {
-    await api.delete(`/contracts/${id}`);
-    fetchContracts();
-  } catch (error) {
-    console.error('Error al eliminar:', error);
-    alert('No se pudo eliminar el contrato.');
-  }
-};
+
 
 const router = useRouter();
 

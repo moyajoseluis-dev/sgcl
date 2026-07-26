@@ -129,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import MainLayout from '@/layouts/MainLayout.vue';
 import api from '@/services/api';
 
@@ -161,9 +161,7 @@ const movementData = ref({
   quantity: 1
 });
 
-const selectedProductName = computed(() => {
-  return searchResults.value.find(p => p.id === movementData.value.productId)?.name || '';
-});
+
 
 const fetchContracts = async () => {
   try {

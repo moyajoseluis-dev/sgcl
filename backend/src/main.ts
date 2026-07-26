@@ -59,7 +59,9 @@ async function bootstrap(): Promise<void> {
   // Levantar el servidor
   const port = configService.get<number>('app.port') ?? 3001;
   
-  await app.listen(port);
+  //await app.listen(port);
+  // El '0.0.0.0' le dice a NestJS que acepte conexiones de cualquier dispositivo en la red WiFi
+  await app.listen(port, '0.0.0.0');
 
   console.log(`🚀 SGCL Backend ejecutándose en: http://localhost:${port}`);
   console.log(`📚 Swagger disponible en:  http://localhost:${port}/swagger`);
