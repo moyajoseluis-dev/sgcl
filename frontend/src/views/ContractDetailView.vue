@@ -192,10 +192,16 @@
                   <h4 class="font-semibold text-slate-800">{{ cycle.period }}</h4>
                   <p class="text-sm text-slate-500">Monto Calculado: <span class="font-bold text-green-600">{{ formatCurrency(cycle.totalAmount) }}</span></p>
                 </div>
-                <div class="flex items-center gap-2 mt-2 md:mt-0">
+                                <div class="flex items-center gap-2 mt-2 md:mt-0">
                   <span :class="getCycleStatusClass(cycle.status)" class="px-3 py-1 text-xs rounded-full font-semibold">
                     {{ translateCycleStatus(cycle.status) }}
                   </span>
+                  <button 
+                    @click="downloadReport(cycle.id)" 
+                    class="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700"
+                  >
+                    📄 Descargar Informe
+                  </button>
                   <button 
                     v-if="cycle.status === 'DRAFT'" 
                     @click="submitCycle(cycle.id)" 
@@ -558,7 +564,26 @@ const deleteDoc = async (id: number) => {
   }
 };
 
-
+// Descargar el PDF del informe de ejecución
+const downloadReport = async (cycleId: number) => {
+  try {
+    // Importante: responseType blob para archivos binarios
+    const response = await api.get(`/reports/billing-cycle/${cycleId}/pdf`, { responseType: 'blob' });
+    
+    // Crear URL temporal y descargar
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `informe-ejecucion-${cycleId}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Error al descargar el informe:', error);
+    alert('No se pudo generar el PDF.');
+  }
+};
 
 // Helpers
 const formatCurrency = (value: number) => {

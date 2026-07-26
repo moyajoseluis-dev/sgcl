@@ -49,22 +49,18 @@ Estado Actual del Proyecto (V2.0 En Progreso)
  Pestaña Operación: Registro de tareas (Preventivos/Correctivos) y ejecución.
  Pestaña Estados de Pago: Ciclos de facturación, cálculo automático desde tareas, y paquete documental (F-30, etc.).
  Pestaña Documentos: Gestor documental con subida real de archivos (Multer).
-Próximos Pasos (Roadmap Inmediato)
-
-Sistema de Logs: Registro de auditoría global (quién hizo qué y cuándo).
-
-Cronología Visual: Línea de tiempo de eventos en el contrato.
-
-Dashboard Ejecutivo Mejorado: Conexión con datos reales de la base de datos local.
-
-Integrar Vista Detalle: Enlazar la lista de contratos al Hub del contrato.
-Pendientes Posteriores
+ Sistema de Logs: Interceptor de auditoría global y vista de logs para admins.
+ Cronología Visual: Línea de tiempo de eventos en el contrato.
+ Dashboard Ejecutivo Mejorado: Conexión con datos reales de la base de datos local.
+ Integrar Vista Detalle: Enlace directo desde la lista de contratos al Hub del contrato.
+Próximos Pasos (Pendientes V2.0)
  Comunicaciones Bidireccionales (Webhooks Wazzup).
  Firma Electrónica (pdf-lib).
  Generador de Informes (Puppeteer).
  App Móvil (Capacitor).
 Estructura de Carpetas Actual
-sgcl/├── docker-compose.yml├── ESTADO_PROYECTO.md├── .gitignore├── docs/ (Informe Diseño, Manual Técnico, Manual Usuario)├── backend/│ ├── uploads/ (Archivos subidos)│ ├── prisma/│ │ ├── schema.prisma│ │ └── seed.ts│ └── src/│ ├── app.module.ts│ ├── main.ts│ ├── config/│ ├── common/ (Guards, Decorators)│ ├── prisma/ (PrismaService, PrismaModule)│ ├── laudus-sdk/│ └── modules/│ ├── auth/│ ├── users/│ ├── contracts/│ ├── sales/│ ├── purchases/│ ├── customers/│ ├── petty-cash/│ ├── logistics/│ ├── tasks/│ ├── billing/│ ├── documents/│ ├── sync/│ ├── dashboard/│ └── notifications/└── frontend/ └── src/ ├── App.vue ├── main.ts ├── style.css ├── router/index.ts ├── services/api.ts ├── stores/auth.ts ├── layouts/MainLayout.vue └── views/ (Login, Dashboard, Sales, Purchases, Users, Contracts, Customers, PettyCash, Logistics, ContractDetailView)
+sgcl/├── docker-compose.yml├── ESTADO_PROYECTO.md├── .gitignore├── docs/ (Informe Diseño, Manual Técnico, Manual Usuario)├── backend/│ ├── uploads/ (Archivos subidos)│ ├── prisma/│ │ ├── schema.prisma│ │ └── seed.ts│ └── src/│ ├── app.module.ts│ ├── main.ts│ ├── config/│ ├── common/ (Guards, Decorators, Interceptors/Audit)│ ├── prisma/ (PrismaService, PrismaModule)│ ├── laudus-sdk/│ └── modules/│ ├── auth/ ├── users/ ├── contracts/ ├── sales/ ├── purchases/│ ├── customers/ ├── petty-cash/ ├── logistics/ ├── tasks/│ ├── billing/ ├── documents/ ├── logs/ ├── sync/ ├── dashboard/│ └── notifications/└── frontend/ └── src/ ├── App.vue ├── main.ts ├── style.css ├── router/index.ts ├── services/api.ts ├── stores/auth.ts ├── layouts/MainLayout.vue └── views/ (Login, Dashboard, Sales, Purchases, Users, Contracts, Customers, PettyCash, Logistics, ContractDetailView, LogsView)
+
 
 
 
