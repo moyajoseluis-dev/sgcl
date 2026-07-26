@@ -44,22 +44,26 @@ Estado Actual del Proyecto (V2.0 En Progreso)
  Infraestructura base, Auth, RBAC, SDK Laudus, Comunicaciones (V1.0).
  Arquitectura de Datos V2: Proyectos, Centros de Costo, Establecimientos, Workflows.
  Módulo de Fondo Fijo: Carga de boletas y aprobación contable.
- Módulo Logístico: Sincronización de productos, movimientos de bodega (Salida, Consumo, Retorno).
+ Módulo Logístico: Sincronización de productos, movimientos de bodega.
  Hub del Contrato (UI): Vista de detalle con KPIs y navegación por pestañas.
- Pestaña Operación: Registro de tareas (Preventivos/Correctivos) y ejecución.
- Pestaña Estados de Pago: Ciclos de facturación, cálculo automático desde tareas, y paquete documental (F-30, etc.).
+ Pestaña Operación: Registro de tareas, ejecución y asignación de fechas.
+ Pestaña Estados de Pago: Ciclos de facturación, cálculo automático, paquete documental.
  Pestaña Documentos: Gestor documental con subida real de archivos (Multer).
- Sistema de Logs: Interceptor de auditoría global y vista de logs para admins.
+ Pestaña Gantt: Cronograma visual de tareas con barras de progreso.
+ Pestaña Calendario: Vista mensual de vencimientos de tareas.
+ Vista Kanban: Tablero Drag & Drop para cambiar estados de contratos.
+ Sistema de Logs: Interceptor de auditoría global y vista de logs.
  Cronología Visual: Línea de tiempo de eventos en el contrato.
+ Generador de Informes: Exportación a PDF con Puppeteer (Informe de Ejecución).
  Dashboard Ejecutivo Mejorado: Conexión con datos reales de la base de datos local.
- Integrar Vista Detalle: Enlace directo desde la lista de contratos al Hub del contrato.
 Próximos Pasos (Pendientes V2.0)
- Comunicaciones Bidireccionales (Webhooks Wazzup).
  Firma Electrónica (pdf-lib).
- Generador de Informes (Puppeteer).
+ Comunicaciones Bidireccionales (Webhooks Wazzup).
  App Móvil (Capacitor).
 Estructura de Carpetas Actual
-sgcl/├── docker-compose.yml├── ESTADO_PROYECTO.md├── .gitignore├── docs/ (Informe Diseño, Manual Técnico, Manual Usuario)├── backend/│ ├── uploads/ (Archivos subidos)│ ├── prisma/│ │ ├── schema.prisma│ │ └── seed.ts│ └── src/│ ├── app.module.ts│ ├── main.ts│ ├── config/│ ├── common/ (Guards, Decorators, Interceptors/Audit)│ ├── prisma/ (PrismaService, PrismaModule)│ ├── laudus-sdk/│ └── modules/│ ├── auth/ ├── users/ ├── contracts/ ├── sales/ ├── purchases/│ ├── customers/ ├── petty-cash/ ├── logistics/ ├── tasks/│ ├── billing/ ├── documents/ ├── logs/ ├── sync/ ├── dashboard/│ └── notifications/└── frontend/ └── src/ ├── App.vue ├── main.ts ├── style.css ├── router/index.ts ├── services/api.ts ├── stores/auth.ts ├── layouts/MainLayout.vue └── views/ (Login, Dashboard, Sales, Purchases, Users, Contracts, Customers, PettyCash, Logistics, ContractDetailView, LogsView)
+sgcl/├── docker-compose.yml├── ESTADO_PROYECTO.md├── .gitignore├── docs/ (Informe Diseño, Manual Técnico, Manual Usuario)├── backend/│ ├── uploads/│ ├── prisma/│ └── src/│ ├── app.module.ts│ ├── main.ts│ ├── config/│ ├── common/ (Guards, Decorators, Interceptors/Audit)│ ├── prisma/ (PrismaService, PrismaModule)│ ├── laudus-sdk/│ └── modules/│ ├── auth/ ├── users/ ├── contracts/ ├── sales/ ├── purchases/│ ├── customers/ ├── petty-cash/ ├── logistics/ ├── tasks/│ ├── billing/ ├── documents/ ├── logs/ ├── reports/ ├── sync/│ ├── dashboard/ └── notifications/└── frontend/ └── src/ ├── App.vue ├── main.ts ├── style.css ├── router/index.ts ├── services/api.ts ├── stores/auth.ts ├── layouts/MainLayout.vue └── views/ (Login, Dashboard, Sales, Purchases, Users, Contracts, Customers, PettyCash, Logistics, ContractDetailView, LogsView, KanbanView)
+
+
 
 
 

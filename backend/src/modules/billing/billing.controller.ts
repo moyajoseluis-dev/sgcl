@@ -42,4 +42,14 @@ export class BillingController {
   approveCycle(@Param('cycleId', ParseIntPipe) cycleId: number) {
     return this.billingService.approveCycle(cycleId);
   }
+
+    @Post('cycle/:cycleId/reject')
+  rejectCycle(@Param('cycleId', ParseIntPipe) cycleId: number) {
+    return this.billingService.rejectCycle(cycleId);
+  }
+
+  @Post('cycle/:cycleId/invoice')
+  invoiceCycle(@Param('cycleId', ParseIntPipe) cycleId: number) {
+    return this.billingService.invoiceCycle(cycleId);
+  }
 }

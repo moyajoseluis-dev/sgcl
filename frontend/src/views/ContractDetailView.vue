@@ -196,18 +196,25 @@
                   <span :class="getCycleStatusClass(cycle.status)" class="px-3 py-1 text-xs rounded-full font-semibold">
                     {{ translateCycleStatus(cycle.status) }}
                   </span>
-                  <button 
-                    @click="downloadReport(cycle.id)" 
-                    class="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700"
-                  >
-                    📄 Descargar Informe
+                  
+                  <button @click="downloadReport(cycle.id)" class="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700">
+                    📄 PDF
                   </button>
-                  <button 
-                    v-if="cycle.status === 'DRAFT'" 
-                    @click="submitCycle(cycle.id)" 
-                    class="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
-                  >
+
+                  <!-- BOTONES CONDICIONADOS POR EL WORKFLOW -->
+                  <button v-if="cycle.status === 'DRAFT'" @click="submitCycle(cycle.id)" class="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700">
                     Enviar a Cliente
+                  </button>
+                  
+                  <button v-if="cycle.status === 'SUBMITTED'" @click="approveCycle(cycle.id)" class="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700">
+                    ✔ Aprobar
+                  </button>
+                  <button v-if="cycle.status === 'SUBMITTED'" @click="rejectCycle(cycle.id)" class="bg-red-100 text-red-700 px-3 py-1 rounded text-xs hover:bg-red-200 border border-red-200">
+                    ✖ Rechazar
+                  </button>
+
+                  <button v-if="cycle.status === 'APPROVED'" @click="invoiceCycle(cycle.id)" class="bg-indigo-600 text-white px-3 py-1 rounded text-xs hover:bg-indigo-700">
+                    📤 Marcar Facturado
                   </button>
                 </div>
               </div>
@@ -796,6 +803,35 @@ const getGanttBarStyle = (task: any) => {
   return { width: '100%', left: '0%', clipPath: `inset(0 ${100 - progress}% 0 0)` };
 };
 
+const approveCycle = async (cycleId: number) => {
+  if (!confirm('¿Confirmas que el cliente aprobó este Estado de Pago?')) return;
+  try {
+    await api.post(`/billing/cycle/${cycleId}/approve`);
+    fetchCycles();
+  } catch (error: any) {
+    alert(error.response?.data?.message || 'Error al aprobar.');
+  }
+};
+
+const rejectCycle = async (cycleId: number) => {
+  if (!confirm('¿Seguro que rechazas este ciclo? Volverá a estado Borrador.')) return;
+  try {
+    await api.post(`/billing/cycle/${cycleId}/reject`);
+    fetchCycles();
+  } catch (error: any) {
+    alert(error.response?.data?.message || 'Error al rechazar.');
+  }
+};
+
+const invoiceCycle = async (cycleId: number) => {
+  if (!confirm('¿Confirmas que este ciclo fue facturado en Laudus? Se cerrará el flujo.')) return;
+  try {
+    await api.post(`/billing/cycle/${cycleId}/invoice`);
+    fetchCycles();
+  } catch (error: any) {
+    alert(error.response?.data?.message || 'Error al facturar.');
+  }
+};
 // Si el usuario cambia de contrato estando en la misma vista
 watch(() => route.params.id, () => {
   fetchContract();

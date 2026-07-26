@@ -1,11 +1,14 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
+import { WorkflowService } from '@/modules/workflow/workflow.service';
 import { CreateBillingCycleDto } from './dto/create-billing-cycle.dto';
 import { AttachDocumentDto } from './dto/attach-document.dto';
 
 @Injectable()
 export class BillingService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService,
+    private readonly workflowService: WorkflowService
+  ) {}
 
   // 1. Crear un ciclo de facturación (Estado de Pago)
   async createCycle(dto: CreateBillingCycleDto) {
@@ -71,17 +74,52 @@ export class BillingService {
       throw new BadRequestException('No se puede enviar el paquete sin documentos adjuntos.');
     }
 
+    // VALIDACIÓN DEL WORKFLOW
+    this.workflowService.validateTransition('BillingCycle', cycle.status, 'SUBMITTED');
+
     return this.prisma.billingCycle.update({
       where: { id: cycleId },
       data: { status: 'SUBMITTED' },
     });
   }
 
-  // 5. Aprobar ciclo (El cliente firmó)
   async approveCycle(cycleId: number) {
+    const cycle = await this.prisma.billingCycle.findUnique({ where: { id: cycleId } });
+    if (!cycle) throw new NotFoundException('Ciclo no encontrado');
+
+    // VALIDACIÓN DEL WORKFLOW
+    this.workflowService.validateTransition('BillingCycle', cycle.status, 'APPROVED');
+
     return this.prisma.billingCycle.update({
       where: { id: cycleId },
       data: { status: 'APPROVED' },
+    });
+  }
+
+  // Nuevo método para rechazar
+  async rejectCycle(cycleId: number) {
+    const cycle = await this.prisma.billingCycle.findUnique({ where: { id: cycleId } });
+    if (!cycle) throw new NotFoundException('Ciclo no encontrado');
+
+    this.workflowService.validateTransition('BillingCycle', cycle.status, 'REJECTED');
+
+    // Al rechazar, el workflow dice que vuelve a DRAFT para poder modificar
+    return this.prisma.billingCycle.update({
+      where: { id: cycleId },
+      data: { status: 'DRAFT' },
+    });
+  }
+
+  // Nuevo método para marcar como facturado en Laudus
+  async invoiceCycle(cycleId: number) {
+    const cycle = await this.prisma.billingCycle.findUnique({ where: { id: cycleId } });
+    if (!cycle) throw new NotFoundException('Ciclo no encontrado');
+
+    this.workflowService.validateTransition('BillingCycle', cycle.status, 'INVOICED');
+
+    return this.prisma.billingCycle.update({
+      where: { id: cycleId },
+      data: { status: 'INVOICED' },
     });
   }
 }

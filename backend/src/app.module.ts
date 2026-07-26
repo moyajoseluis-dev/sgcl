@@ -22,6 +22,7 @@ import { BillingModule } from './modules/billing/billing.module';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { LogsModule } from './modules/logs/logs.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { WorkflowModule } from './modules/workflow/workflow.module';
 import { ServeStaticModule } from '@nestjs/serve-static'; // Para servir los archivos estáticos
 import { join } from 'path';
 
@@ -49,6 +50,7 @@ import { join } from 'path';
     TasksModule,
     BillingModule,
     LogsModule,
+    WorkflowModule,
     ReportsModule,
     DocumentsModule,
     ServeStaticModule.forRoot({
