@@ -44,4 +44,13 @@ export class ContractsController {
   getTimeline(@Param('id', ParseIntPipe) id: number) {
     return this.contractsService.getTimeline(id);
   }
+
+    @Put(':id/status')
+  @UseGuards(JwtAuthGuard)
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number, 
+    @Body('status') status: string
+  ) {
+    return this.contractsService.updateStatus(id, status);
+  }
 }

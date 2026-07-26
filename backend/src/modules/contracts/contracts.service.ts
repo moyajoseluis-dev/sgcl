@@ -96,5 +96,15 @@ export class ContractsService {
     return events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }
 
+    async updateStatus(id: number, status: string) {
+    const contract = await this.prisma.contract.findUnique({ where: { id } });
+    if (!contract) throw new NotFoundException('Contrato no encontrado');
+    
+    return this.prisma.contract.update({
+      where: { id },
+      data: { status: status as any }, // Lo tipamos como any para simplificar, pero validamos en frontend
+    });
+  }
+
 
 }
