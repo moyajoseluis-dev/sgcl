@@ -289,8 +289,11 @@
                   <span class="bg-slate-100 text-slate-700 px-2 py-1 text-xs rounded-full font-semibold">{{ doc.fileType }}</span>
                 </td>
                 <td class="px-4 py-3">{{ new Date(doc.uploadedAt).toLocaleDateString('es-CL') }}</td>
-                <td class="px-4 py-3 text-center">
+                <td class="px-4 py-3 text-center space-x-2">
                   <button @click="deleteDoc(doc.id)" class="text-red-600 hover:text-red-800 text-xs font-semibold">Eliminar</button>
+                  <button v-if="doc.fileType === 'PDF'" @click="openSignModal(doc)" class="text-blue-600 hover:text-blue-800 text-xs font-semibold">
+                    ✍ Firmar
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -436,7 +439,38 @@
         </div>
       </div>
     </div>
-    
+        <!-- Modal para Firmar Documento -->
+    <div v-if="showSignModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" @click.self="closeSignModal">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div class="p-4 border-b border-slate-200 flex justify-between items-center">
+          <h3 class="font-semibold text-slate-800">Firmar Documento</h3>
+          <button @click="closeSignModal" class="text-slate-400 hover:text-slate-600 text-2xl">×</button>
+        </div>
+        <div class="p-6 space-y-4">
+          <p class="text-sm text-slate-500">Documento: <span class="font-semibold">{{ docToSign?.fileName }}</span></p>
+          
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Nombre del Firmante</label>
+            <input v-model="signData.signerName" type="text" class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: Juan Pérez" />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">RUT</label>
+            <input v-model="signData.signerRut" type="text" class="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: 12.345.678-9" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Imagen de Firma (PNG)</label>
+           <input type="file" @change="handleSignatureSelect" accept="image/png, image/jpeg" class="..." />
+            <p v-if="signData.signatureImage" class="text-green-600 text-xs mt-1">✓ Imagen cargada</p>
+          </div>
+        </div>
+        <div class="p-4 border-t border-slate-200 flex justify-end gap-2">
+          <button @click="closeSignModal" class="px-4 py-2 bg-slate-100 text-slate-700 rounded text-sm hover:bg-slate-200">Cancelar</button>
+          <button @click="executeSignature" class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Firmar PDF</button>
+        </div>
+      </div>
+    </div>
 
   </MainLayout>
 </template>
@@ -832,6 +866,55 @@ const invoiceCycle = async (cycleId: number) => {
     alert(error.response?.data?.message || 'Error al facturar.');
   }
 };
+
+// --- Lógica de Firma Electrónica ---
+const showSignModal = ref(false);
+const docToSign = ref<any>(null);
+const signData = ref({
+  signerName: '',
+  signerRut: '',
+  signatureImage: ''
+});
+
+const openSignModal = (doc: any) => {
+  docToSign.value = doc;
+  signData.value = { signerName: '', signerRut: '', signatureImage: '' };
+  showSignModal.value = true;
+};
+
+const closeSignModal = () => {
+  showSignModal.value = false;
+};
+
+const handleSignatureSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files.length > 0) {
+    const file = target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      signData.value.signatureImage = e.target?.result as string;
+    };
+    reader.readAsDataURL(file); // Convierte a Base64
+  }
+};
+
+const executeSignature = async () => {
+  if (!docToSign.value || !signData.value.signatureImage || !signData.value.signerName || !signData.value.signerRut) {
+    alert('Debe completar todos los datos y subir una imagen de firma.');
+    return;
+  }
+
+  try {
+    await api.post(`/documents/${docToSign.value.id}/sign`, signData.value);
+    closeSignModal();
+    fetchDocuments(); // Actualizar lista para ver el nuevo PDF firmado
+    alert('Documento firmado exitosamente.');
+  } catch (error) {
+    console.error('Error al firmar:', error);
+    alert('No se pudo firmar el documento.');
+  }
+};
+
 // Si el usuario cambia de contrato estando en la misma vista
 watch(() => route.params.id, () => {
   fetchContract();

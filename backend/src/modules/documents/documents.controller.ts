@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Body, ParseIntPipe, Post, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -38,5 +38,18 @@ export class DocumentsController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.documentsService.remove(id);
+  }
+
+  @Post(':id/sign')
+  signDocument(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { signerName: string; signerRut: string; signatureImage: string },
+  ) {
+    return this.documentsService.signDocument(
+      id,
+      body.signerName,
+      body.signerRut,
+      body.signatureImage
+    );
   }
 }
