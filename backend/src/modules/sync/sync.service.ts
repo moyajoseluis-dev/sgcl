@@ -2,6 +2,8 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CustomersRepository } from '@/laudus-sdk/repositories/customers.repository';
 import { ProductsRepository } from '@/laudus-sdk/repositories/products.repository';
+import { CostCentersRepository } from '@/laudus-sdk/repositories/cost-centers.repository';
+import { EmployeesRepository } from '@/laudus-sdk/repositories/employees.repository';
 
 @Injectable()
 export class SyncService {
@@ -9,6 +11,8 @@ export class SyncService {
     private readonly prisma: PrismaService,
     private readonly customersRepo: CustomersRepository,
     private readonly productsRepo: ProductsRepository,
+    private readonly costCentersRepo: CostCentersRepository, // <--- Nuevo
+    private readonly employeesRepo: EmployeesRepository,     // <--- Nuevo
   ) {}
 
   async getStatus() {
@@ -154,6 +158,58 @@ export class SyncService {
       }
       
       // --- FIN SINCRONIZACIÓN DE PRODUCTOS ---
+            // --- SINCRONIZACIÓN DE CENTROS DE COSTO ---
+      const ccResponse: unknown = await this.costCentersRepo.list({
+        options: { offset: 0, limit: 1000 },
+        fields: ["costCenterId", "name"],
+        filterBy: [],
+        orderBy: [{ field: "costCenterId", direction: "ASC" }]
+      });
+
+      let costCenters: any[] = [];
+      if (Array.isArray(ccResponse)) {
+        costCenters = ccResponse as any[];
+      }
+
+      for (const cc of costCenters) {
+        await this.prisma.costCenter.upsert({
+          where: { laudusId: cc.costCenterId },
+          update: { name: cc.name },
+          create: { laudusId: cc.costCenterId, name: cc.name, budget: 0 },
+        });
+      }
+
+            // --- SINCRONIZACIÓN DE EMPLEADOS (RRHH) ---
+      const empResponse: unknown = await this.employeesRepo.list({
+        options: { offset: 0, limit: 1000 },
+        fields: ["employeeId", "firstName", "lastName1", "contractualSalary", "costCenter.costCenterId"],
+        filterBy: [],
+        orderBy: [{ field: "employeeId", direction: "ASC" }]
+      });
+
+      let employees: any[] = [];
+      if (Array.isArray(empResponse)) {
+        employees = empResponse as any[];
+      }
+
+      for (const emp of employees) {
+        await this.prisma.employee.upsert({
+          where: { id: emp.employeeId },
+          update: {
+            firstName: emp.firstName || '',
+            lastName: emp.lastName1 || '', // Mapeamos lastName1 a nuestro campo lastName
+            grossSalary: emp.contractualSalary || 0, // Mapeamos contractualSalary a grossSalary
+            costCenterId: emp.costCenter?.costCenterId || null,
+          },
+          create: {
+            id: emp.employeeId,
+            firstName: emp.firstName || '',
+            lastName: emp.lastName1 || '',
+            grossSalary: emp.contractualSalary || 0,
+            costCenterId: emp.costCenter?.costCenterId || null,
+          },
+        });
+      }
 
     } catch (error) {
       console.error('Error durante la sincronización con Laudus:', error);

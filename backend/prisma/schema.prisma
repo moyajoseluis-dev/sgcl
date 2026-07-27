@@ -256,3 +256,23 @@ model ActivityLog {
   ipAddress String?
   createdAt DateTime @default(now())
 }
+
+// --- MÓDULO DE RRHH Y GASTOS GENERALES ---
+
+model Employee {
+  id           Int       @id // ID original de Laudus
+  firstName    String
+  lastName     String
+  grossSalary  Float     @default(0)
+  costCenterId String?   // Para saber a qué proyecto se asigna su sueldo
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model GeneralExpense {
+  id          Int      @id @default(autoincrement())
+  description String
+  amount      Float
+  period      String   // Ej: "2026-07" (Año-Mes)
+  createdAt   DateTime @default(now())
+}

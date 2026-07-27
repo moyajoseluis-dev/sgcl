@@ -23,6 +23,7 @@ import { DocumentsModule } from './modules/documents/documents.module';
 import { LogsModule } from './modules/logs/logs.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { WorkflowModule } from './modules/workflow/workflow.module';
+import {OverheadModule} from './modules/overhead/overhead.module';
 import { ServeStaticModule } from '@nestjs/serve-static'; // Para servir los archivos estáticos
 import { join } from 'path';
 
@@ -53,6 +54,7 @@ import { join } from 'path';
     WorkflowModule,
     ReportsModule,
     DocumentsModule,
+    OverheadModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',}),

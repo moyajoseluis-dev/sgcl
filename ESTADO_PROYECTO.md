@@ -33,14 +33,14 @@ Infraestructura base, Auth, RBAC, SDK Laudus, Módulo de Ventas/Compras, Sincron
 
 🚀 SGCL - Sistema de Gestión y Control Laudus (v2.0)
 Arquitectura General
-Frontend: Vue 3 + Vite + TailwindCSS 4 + Pinia + Axios + Chart.js (Desplegado en Vercel)
+Frontend: Vue 3 + Vite + TailwindCSS 4 + Pinia + Axios + Chart.js (Desplegado en Vercel / APK Android)
 Backend: NestJS 11 + TypeScript Estricto (Sin any) (Desplegado en Render)
 Base de Datos: PostgreSQL 16 (Gestionado con Prisma ORM 5) (Desplegado en Neon)
 Integraciones: Laudus API (SDK + Sync Híbrido), Wazzup API (WhatsApp), SMTP (Email)
 Enfoque V2.0: Entity-Centric & Operación Ágil
 SGCL se posiciona como la "Capa de Operación Diaria". El enfoque Contract-Centric permite centralizar finanzas, operación, documentación y comunicación en un solo lugar (Hub del Contrato).
 
-Estado Actual del Proyecto (V2.0 En Progreso)
+Estado Actual del Proyecto (V2.0 Casi Completada ✅)
  Infraestructura base, Auth, RBAC, SDK Laudus, Comunicaciones (V1.0).
  Arquitectura de Datos V2: Proyectos, Centros de Costo, Establecimientos, Workflows.
  Módulo de Fondo Fijo: Carga de boletas y aprobación contable.
@@ -52,18 +52,17 @@ Estado Actual del Proyecto (V2.0 En Progreso)
  Pestaña Gantt: Cronograma visual de tareas con barras de progreso.
  Pestaña Calendario: Vista mensual de vencimientos de tareas.
  Vista Kanban: Tablero Drag & Drop para cambiar estados de contratos.
+ Motor de Workflow: Máquina de estados para validación de transiciones.
  Sistema de Logs: Interceptor de auditoría global y vista de logs.
  Cronología Visual: Línea de tiempo de eventos en el contrato.
  Generador de Informes: Exportación a PDF con Puppeteer (Informe de Ejecución).
- Dashboard Ejecutivo Mejorado: Conexión con datos reales de la base de datos local.
+ Firma Electrónica: Estampado de firma y RUT en PDFs con pdf-lib.
+ Responsividad (Mobile First): Menú hamburguesa y UI adaptada a celulares.
+ App Móvil (APK): Empaquetado exitoso con Capacitor para Android.
 Próximos Pasos (Pendientes V2.0)
- Firma Electrónica (pdf-lib).
  Comunicaciones Bidireccionales (Webhooks Wazzup).
- App Móvil (Capacitor).
 Estructura de Carpetas Actual
-sgcl/├── docker-compose.yml├── ESTADO_PROYECTO.md├── .gitignore├── docs/ (Informe Diseño, Manual Técnico, Manual Usuario)├── backend/│ ├── uploads/│ ├── prisma/│ └── src/│ ├── app.module.ts│ ├── main.ts│ ├── config/│ ├── common/ (Guards, Decorators, Interceptors/Audit)│ ├── prisma/ (PrismaService, PrismaModule)│ ├── laudus-sdk/│ └── modules/│ ├── auth/ ├── users/ ├── contracts/ ├── sales/ ├── purchases/│ ├── customers/ ├── petty-cash/ ├── logistics/ ├── tasks/│ ├── billing/ ├── documents/ ├── logs/ ├── reports/ ├── sync/│ ├── dashboard/ └── notifications/└── frontend/ └── src/ ├── App.vue ├── main.ts ├── style.css ├── router/index.ts ├── services/api.ts ├── stores/auth.ts ├── layouts/MainLayout.vue └── views/ (Login, Dashboard, Sales, Purchases, Users, Contracts, Customers, PettyCash, Logistics, ContractDetailView, LogsView, KanbanView)
-
-
+sgcl/├── docker-compose.yml├── ESTADO_PROYECTO.md├── .gitignore├── docs/ (Informe Diseño, Manual Técnico, Manual Usuario, Base de Datos)├── backend/│ ├── uploads/│ ├── prisma/│ └── src/│ ├── app.module.ts│ ├── main.ts│ ├── config/│ ├── common/ (Guards, Decorators, Interceptors/Audit)│ ├── prisma/ (PrismaService, PrismaModule)│ ├── laudus-sdk/│ └── modules/│ ├── auth/ ├── users/ ├── contracts/ ├── sales/ ├── purchases/│ ├── customers/ ├── petty-cash/ ├── logistics/ ├── tasks/│ ├── billing/ ├── documents/ ├── logs/ ├── reports/ ├── sync/│ ├── workflow/ ├── dashboard/ └── notifications/└── frontend/ ├── android/ (Proyecto Capacitor) └── src/ ├── App.vue ├── main.ts ├── style.css ├── router/index.ts ├── services/api.ts ├── stores/auth.ts ├── layouts/MainLayout.vue └── views/ (Login, Dashboard, Sales, Purchases, Users, Contracts, Customers, PettyCash, Logistics, ContractDetailView, LogsView, KanbanView)
 
 
 
